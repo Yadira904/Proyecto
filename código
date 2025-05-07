@@ -1,0 +1,137 @@
+const Alexa = require('ask-sdk-dynamodb-persistence-adapter');
+
+const LaunchRequestHandler = {
+    canHandle(handlerInput) {
+        return Alexa.getRequestType(handlerInput.requestEnvelope) === 'LaunchRequest';
+    },
+    async handle(handlerInput) {
+        const attributesManager = handlerInput.attributesManager;
+        const sessionAttributes = await attributesManager.getPersistentAttributes() || {};
+        
+        sessionAttributes.puzzleStep = 0;
+        sessionAttributes.akinatorStep = 0;
+        attributesManager.setPersistentAttributes(sessionAttributes);
+        await attributesManager.savePersistentAttributes();
+        
+        const speakOutput = "Bienvenido al Escape Room de Fracciones. Para escapar, resuelve tres acertijos. Si no sabes la respuesta, te ayudaré con preguntas. Vamos con el primer acertijo. ¿Cuál de estas opciones es una fracción propia? Uno sobre dos, cinco sobre tres o siete sobre siete?";
+        return handlerInput.responseBuilder.speak(speakOutput).reprompt("Di tu respuesta en formato número sobre número.").getResponse();
+    }
+};
+
+// Handler de respuestas del usuario
+const FractionPuzzleHandler = {
+    canHandle(handlerInput) {
+        return Alexa.getIntentName(handlerInput.requestEnvelope) === 'FractionAnswerIntent';
+    },
+    async handle(handlerInput) {
+        const attributesManager = handlerInput.attributesManager;
+        const sessionAttributes = await attributesManager.getPersistentAttributes();
+        
+        const userAnswer = handlerInput.requestEnvelope.request.intent.slots.fraction.value;
+        const puzzles = [
+            { question: "¿Cuál de estas opciones es una fracción propia? Uno sobre dos, cinco sobre tres o siete sobre siete?", answer: "1/2" },
+            { question: "¿Cuál de estas es una fracción impropia? Tres sobre cinco, cuatro sobre cuatro o dos sobre siete?", answer: "4/4" },
+            { question: "¿Cuál de estas es una fracción mixta? Cinco tercios, dos enteros y un cuarto, o siete sobre dos?", answer: "2 1/4" }
+        ];
+        
+        const currentPuzzle = sessionAttributes.puzzleStep;
+
+        if (userAnswer === puzzles[currentPuzzle].answer) {
+            sessionAttributes.puzzleStep += 1;
+            await attributesManager.savePersistentAttributes();
+
+            if (sessionAttributes.puzzleStep >= puzzles.length) {
+                return handlerInput.responseBuilder.speak("¡Correcto! Has resuelto todos los acertijos y escapaste de la biblioteca mágica. ¡Felicidades!").getResponse();
+            }
+
+            return handlerInput.responseBuilder.speak(`¡Correcto! Ahora el siguiente acertijo: ${puzzles[sessionAttributes.puzzleStep].question}`).reprompt("Di tu respuesta.").getResponse();
+        } else {
+            sessionAttributes.akinatorStep = 1;
+            await attributesManager.savePersistentAttributes();
+            return handlerInput.responseBuilder.speak("Parece que no estás seguro. Déjame ayudarte con algunas preguntas. ¿El numerador es menor que el denominador?").reprompt("Responde con sí o no.").getResponse();
+        }
+    }
+};
+
+// Modo Akinator para ayudar al usuario
+const AkinatorHelperHandler = {
+    canHandle(handlerInput) {
+        return Alexa.getIntentName(handlerInput.requestEnvelope) === 'AkinatorHelperIntent';
+    },
+    async handle(handlerInput) {
+        const attributesManager = handlerInput.attributesManager;
+        const sessionAttributes = await attributesManager.getPersistentAttributes();
+        
+        const userAnswer = handlerInput.requestEnvelope.request.intent.slots.answer.value.toLowerCase();
+        let speakOutput = "";
+
+        if (sessionAttributes.akinatorStep === 1) {
+            if (userAnswer === "sí") {
+                speakOutput = "Tu fracción es una FRACCIÓN PROPIA, como 3/4. Inténtalo de nuevo.";
+            } else {
+                speakOutput = "¿El numerador es mayor que el denominador?";
+                sessionAttributes.akinatorStep = 2;
+            }
+        } else if (sessionAttributes.akinatorStep === 2) {
+            if (userAnswer === "no") {
+                speakOutput = "Parece que la fracción no es válida. Revisa los valores.";
+            } else {
+                speakOutput = "¿La fracción tiene un número entero más una fracción?";
+                sessionAttributes.akinatorStep = 3;
+            }
+        } else if (sessionAttributes.akinatorStep === 3) {
+            if (userAnswer === "sí") {
+                speakOutput = "Tu fracción es una FRACCIÓN MIXTA, como 2 1/3. Inténtalo otra vez.";
+            } else {
+                speakOutput = "Tu fracción es una FRACCIÓN IMPROPIA, como 7/5. Prueba de nuevo.";
+            }
+            sessionAttributes.akinatorStep = 0;
+        }
+
+        await attributesManager.savePersistentAttributes();
+        return handlerInput.responseBuilder.speak(speakOutput).reprompt("Inténtalo de nuevo.").getResponse();
+    }
+};
+
+// Handlers de ayuda y salida
+const HelpIntentHandler = {
+    canHandle(handlerInput) {
+        return Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.HelpIntent';
+    },
+    handle(handlerInput) {
+        return handlerInput.responseBuilder.speak("Resuelve los acertijos para escapar de la biblioteca. Si no sabes la respuesta, te haré preguntas para ayudarte. ¿Listo para continuar?").getResponse();
+    }
+};
+
+const CancelAndStopIntentHandler = {
+    canHandle(handlerInput) {
+        return ['AMAZON.CancelIntent', 'AMAZON.StopIntent'].includes(Alexa.getIntentName(handlerInput.requestEnvelope));
+    },
+    handle(handlerInput) {
+        return handlerInput.responseBuilder.speak("Hasta luego.").getResponse();
+    }
+};
+
+const ErrorHandler = {
+    canHandle() {
+        return true;
+    },
+    handle(handlerInput, error) {
+        console.log(`Error: ${error.message}`);
+        return handlerInput.responseBuilder.speak("Lo siento, ocurrió un error.").getResponse();
+    }
+};
+
+exports.handler = Alexa.SkillBuilders.custom()
+    .addRequestHandlers(
+        LaunchRequestHandler,
+        FractionPuzzleHandler,
+        AkinatorHelperHandler,
+        HelpIntentHandler,
+        CancelAndStopIntentHandler
+    )
+    .addErrorHandlers(ErrorHandler)
+    .withPersistenceAdapter(
+        new Alexa.DynamoDbPersistenceAdapter({ tableName: 'FractionEscapeRoom', createTable: true })
+    )
+    .lambda();
