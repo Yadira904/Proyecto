@@ -1,0 +1,109 @@
+const Alexa = require('ask-sdk-core');
+const lista = require('./lista.json');
+const mensajes = require('./mensajes.json');
+
+const LaunchRequestHandler = {
+    canHandle(handlerInput) {
+        return Alexa.getRequestType(handlerInput.requestEnvelope) === 'LaunchRequest';
+    },
+    handle(handlerInput) {
+        const speakOutput = `${mensajes.LAUNCH_INTENT_SPEAK} ${mensajes.MENSAJE_1}`;
+        return handlerInput.responseBuilder
+            .speak(speakOutput)
+            .reprompt(mensajes.MENSAJE_1)
+            .getResponse();
+    }
+};
+
+const RepasoIntentHandler = {
+    canHandle(handlerInput) {
+        return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
+            && Alexa.getIntentName(handlerInput.requestEnvelope) === 'RepasoIntent';
+    },
+    handle(handlerInput) {
+        return handlerInput.responseBuilder
+            .speak(lista.L1)
+            .reprompt(mensajes.MENSAJE_2)
+            .getResponse();
+    }
+};
+
+const EmpezarIntentHandler = {
+    canHandle(handlerInput) {
+        return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
+            && Alexa.getIntentName(handlerInput.requestEnvelope) === 'EmpezarIntent';
+    },
+    handle(handlerInput) {
+        const actividad = `${mensajes.ORDINAL_PHRASES[0]}. ${mensajes.ACTIVITY_1[0]}`;
+        return handlerInput.responseBuilder
+            .speak(actividad)
+            .reprompt(mensajes.ACTIVITY_1[0])
+            .getResponse();
+    }
+};
+
+const HelpIntentHandler = {
+    canHandle(handlerInput) {
+        return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
+            && Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.HelpIntent';
+    },
+    handle(handlerInput) {
+        return handlerInput.responseBuilder
+            .speak(mensajes.MENSAJE_3)
+            .reprompt(mensajes.MENSAJE_3)
+            .getResponse();
+    }
+};
+
+const CancelAndStopIntentHandler = {
+    canHandle(handlerInput) {
+        const requestType = Alexa.getRequestType(handlerInput.requestEnvelope);
+        const intentName = Alexa.getIntentName(handlerInput.requestEnvelope);
+        return requestType === 'IntentRequest' &&
+            (intentName === 'AMAZON.CancelIntent' || intentName === 'AMAZON.StopIntent');
+    },
+    handle(handlerInput) {
+        return handlerInput.responseBuilder
+            .speak("Hasta pronto, aventurero de las fracciones.")
+            .getResponse();
+    }
+};
+
+const FallbackIntentHandler = {
+    canHandle(handlerInput) {
+        return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
+            && Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.FallbackIntent';
+    },
+    handle(handlerInput) {
+        const speakOutput = 'No entendí eso. Puedes pedirme un repaso o comenzar el desafío.';
+        return handlerInput.responseBuilder
+            .speak(speakOutput)
+            .reprompt(speakOutput)
+            .getResponse();
+    }
+};
+
+const ErrorHandler = {
+    canHandle() {
+        return true;
+    },
+    handle(handlerInput, error) {
+        console.log(`Error: ${error.message}`);
+        return handlerInput.responseBuilder
+            .speak('Lo siento, ocurrió un error.')
+            .reprompt('¿Puedes repetir eso?')
+            .getResponse();
+    }
+};
+
+exports.handler = Alexa.SkillBuilders.custom()
+    .addRequestHandlers(
+        LaunchRequestHandler,
+        RepasoIntentHandler,
+        EmpezarIntentHandler,
+        HelpIntentHandler,
+        CancelAndStopIntentHandler,
+        FallbackIntentHandler
+    )
+    .addErrorHandlers(ErrorHandler)
+    .lambda();
