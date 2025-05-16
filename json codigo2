@@ -1,0 +1,62 @@
+{
+    "interactionModel": {
+        "languageModel": {
+            "invocationName": "castillo de las fracciones",
+            "intents": [
+                {
+                    "name": "RepasoIntent",
+                    "slots": [],
+                    "samples": [
+                        "quiero un repaso",
+                        "repaso",
+                        "explícame primero",
+                        "dame una explicación",
+                        "antes un repaso"
+                    ]
+                },
+                {
+                    "name": "EmpezarIntent",
+                    "slots": [],
+                    "samples": [
+                        "estoy listo",
+                        "listo",
+                        "quiero empezar",
+                        "comenzar desafío",
+                        "empezar",
+                        "vamos al desafío",
+                        "iniciar reto"
+                    ]
+                },
+                {
+                    "name": "AMAZON.HelpIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.CancelIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.StopIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.FallbackIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.NavigateHomeIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.YesIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.NoIntent",
+                    "samples": []
+                }
+            ],
+            "types": []
+        }
+    }
+}
