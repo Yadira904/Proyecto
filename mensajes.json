@@ -1,0 +1,15 @@
+{"LAUNCH_INTENT_SPEAK":"Bienvenido al Castillo misterioso de las fracciones. Aqui te esperan desafíos matemàticos.", 
+"SUPPORT_PHRASES":["¡Bien hecho! la respuesta es correcta","Muy bien. Pasaste todas las pruebas. ¿Te gustaría practicar mas?", ""],
+"FAILED_PHRASES":["Intenta de nuevo. Recuerda...."],
+"ORDINAL_PHRASES":["Primer desafío","Segundo sedafío", "Tercer desafío"],
+"ACTIVITY_1":["Observa las siguientes imagenes y dime el numerador y el denominador"],
+"ACTIVITY_2":["¿Cuál de estas es una fracción impropia? Opciones:Tres sobre dos (3/2), uno sobre cuatro (¼) o dos sobre cinco (⅖)?. ¿Cuál de estas es una fracción mixta? Opciones: Dos enteros y un medio (2 ½ ), cinco tercios (5/3) o siete quintos(7/5)?"],
+"ACTIVITY_3":["cuanto es la suma de las siguientes fracciones simples: ¼ + ¼ ? Opciones: 1/2, 1/8, 2/4, Otra respuesta"],  
+"ACTIVITY_4":["¿Cúal es la resta de las siguientes fracciones impropias: 3/2 - ½?. Opciones: 1, 2/2, ½, Otra respuesta"],
+"MENSAJE_1":"Antes de comenzar con los desafíos, ¿te gustaría un breve repaso de qué es una fracción o quieres ir directo al desafío?",
+"MENSAJE_2":"¿Estás listo para comenzar o quieres alguna otra explicación?",
+"MENSAJE_3":"El numero de arriba y el de abajo de las fracciones tiene su nombre: El número de arriba es el numerador indica cuántas partes se toman de la unidad dividida. El número de abajo se llama denominador e indica en cuántas partes se ha dividido la unidad.",
+"REMEMBER1":"Intenta de nuevo. Recuerda que: Las fracciones propias son aquellas cuyo numerador es menor que el denominador, por ejemplo: ( ⅘ , 7/9 , ⅖ ).Las fracciones impropias son aquellas cuyo numerador es mayor que el denominador: (8/7 , 6/3 , 3/1).Las fracciones mixtas son aquellas que además de ser propias o impropias se antepone en un entero: (5 2/7, 3 6/3, 8 3/1,). ¿Cuál de estas es una fracción propia? Opciones: Uno sobre tres (⅓), cinco sobre cuatro (5/4) o seis sobre seis (6/6)?.",
+"REMEMBER2":"Intenta de nuevo. Recuerda que: Para resolver una suma de fracciones con igual denominador, se suman los numeradores y se deja el mismo denominador, ejemplo: 3/2 + ½ = (3+1)/2 = 4/2",
+"REMEMBER3":"Intenta de nuevo. Recuerda que: Para resolver una resta de fracciones con igual denominador, se restan los numeradores y se deja el mismo denominador. Ejemplo: 6/4 - 2/4 = (6-2) / 4 = 4/4"
+}
